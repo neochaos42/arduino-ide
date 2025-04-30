@@ -89,9 +89,7 @@ env:
           name: Windows_X86-64_zip
     - config:
         # Human identifier for the job.
-        name: Windows ARM
-        runs-on: windows-11-arm
-        # The value is a string representing a JSON document.
+        name: Windows ARM.
         # Setting this to null causes the job to run directly in the runner machine instead of in a container.
         container: |
           null
@@ -361,6 +359,15 @@ jobs:
           # container where Yarn is not pre-installed.
           cache: ${{ fromJSON(matrix.config.container) == null && 'yarn' || null }}
 
+      - name: Install Node.js for Windows ARM64
+        if: runner.os == 'Windows' && matrix.config.name == 'Windows ARM'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+          # Yarn is a prerequisite for the action's cache feature, so caching should be disabled when running in the
+          # container where Yarn is not pre-installed.
+          cache: ${{ fromJSON(matrix.config.container) == null && 'yarn' || null }}
       - name: Install Yarn
         if: runner.name != 'WINDOWS-SIGN-PC'
         run: |
