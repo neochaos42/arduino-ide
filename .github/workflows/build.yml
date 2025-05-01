@@ -109,8 +109,6 @@ env:
         # and the companion needs.select-targets.outputs.merge-channel-files property (output values always have string
         # type).
         mergeable-channel-file: 'false'
-        # as this runs on a GitHub-hosted runner, we don't need to worry about path length issues.
-        working-directory: 'C:\a'
       artifacts:
         - path: '*Windows_ARM.exe'
           name: Windows_ARM_interactive_installer
