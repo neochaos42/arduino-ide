@@ -336,6 +336,10 @@ jobs:
       - name: Install liblzma for Windows ARM64
         if: runner.os == 'Windows' && runner.arch == 'ARM64'
         run: |
+          if [ -d "C:\\vcpkg" ]; then
+            echo "Removing existing vcpkg directory..."
+            rmdir /s /q "C:\\vcpkg"
+          fi
           git clone https://github.com/microsoft/vcpkg.git C:\\vcpkg
           C:\\vcpkg\\bootstrap-vcpkg.bat
           C:\\vcpkg\\vcpkg.exe install liblzma:arm64-windows
