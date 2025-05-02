@@ -335,16 +335,17 @@ jobs:
 
       - name: Install liblzma for Windows ARM64
         if: runner.os == 'Windows' && runner.arch == 'ARM64'
+        shell: pwsh
         run: |
-          if [ -d "C:\\vcpkg" ]; then
-            echo "Removing existing vcpkg directory..."
-            rmdir /s /q "C:\\vcpkg"
-          fi
-          git clone https://github.com/microsoft/vcpkg.git C:\\vcpkg
-          C:\\vcpkg\\bootstrap-vcpkg.bat
-          C:\\vcpkg\\vcpkg.exe install liblzma:arm64-windows
-          echo "LIBLZMA_INCLUDE_PATH=C:\\vcpkg\\installed\\arm64-windows\\include" >> %GITHUB_ENV%
-          echo "LIBLZMA_LIB_PATH=C:\\vcpkg\\installed\\arm64-windows\\lib" >> %GITHUB_ENV%
+          if (Test-Path "C:\vcpkg") {
+            Write-Host "Removing existing vcpkg directory..."
+            Remove-Item -Recurse -Force "C:\vcpkg"
+          }
+          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          Start-Process -FilePath "C:\vcpkg\bootstrap-vcpkg.bat" -Wait
+          Start-Process -FilePath "C:\vcpkg\vcpkg.exe" -ArgumentList "install liblzma:arm64-windows" -Wait
+          Add-Content -Path $env:GITHUB_ENV -Value "LIBLZMA_INCLUDE_PATH=C:\vcpkg\installed\arm64-windows\include"
+          Add-Content -Path $env:GITHUB_ENV -Value "LIBLZMA_LIB_PATH=C:\vcpkg\installed\arm64-windows\lib"
 
       - name: Patch lzma-native to use ARM64 liblzma
         if: runner.os == 'Windows' && runner.arch == 'ARM64'
